@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
-
-/// Flutter code sample for [BottomNavigationBar].
+import 'package:zeus/pages/chat_page.dart'; // Import your chat page
+import 'package:zeus/pages/dashboard_page.dart';
+import 'package:zeus/pages/profile_page.dart';
 
 void main() => runApp(const RootApp());
 
 class RootApp extends StatelessWidget {
-  const RootApp({super.key});
+  const RootApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: BottomNavigationBarExample(),
     );
   }
 }
 
 class BottomNavigationBarExample extends StatefulWidget {
-  const BottomNavigationBarExample({super.key});
+  const BottomNavigationBarExample({Key? key}) : super(key: key);
 
   @override
   State<BottomNavigationBarExample> createState() =>
@@ -26,25 +28,13 @@ class BottomNavigationBarExample extends StatefulWidget {
 class _BottomNavigationBarExampleState
     extends State<BottomNavigationBarExample> {
   int _selectedIndex = 0;
+
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.black);
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'Index 0: Home',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 1: Message',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 2: Notifications',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 3: Profile',
-      style: optionStyle,
-    ),
+
+  static List<Widget> _widgetOptions = <Widget>[
+    DashboardPage(),
+    ProfilePage(),
   ];
 
   void _onItemTapped(int index) {
@@ -56,25 +46,40 @@ class _BottomNavigationBarExampleState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('BottomNavigationBar Sample'),
-      ),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
+      body: Stack(
+        children: [
+          _widgetOptions.elementAt(_selectedIndex),
+          Positioned(
+            bottom: 20,
+            left: 0,
+            right: 0,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (_) => ChatScreen()));
+              },
+              child: Container(
+                height: 60,
+                width: 60,
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.chat,
+                  color: Colors.white,
+                  size: 30,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.grid_view),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.comment),
-            label: 'Message',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notification',
+            label: 'Dashboard',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle),
@@ -82,7 +87,8 @@ class _BottomNavigationBarExampleState
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
+        unselectedIconTheme: IconThemeData(opacity: 0.3),
+        selectedIconTheme: IconThemeData(opacity: 1, color: Colors.amber),
         onTap: _onItemTapped,
       ),
     );
